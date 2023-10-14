@@ -1,0 +1,380 @@
+name: Build, Test & Publish
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'main'
+
+permissions: write-all
+
+env:
+  PG_VERSION: 15.4
+  PG_DIST_VERSION: 2
+
+jobs:
+  repack-darwin-arm64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create archives
+        run: |
+          ./scripts/repack-postgres.sh -v $PG_VERSION -p darwin -a arm64v8
+      - name: Upload bundle
+        uses: actions/upload-artifact@v3
+        with:
+          path: bundle/postgres-darwin-arm_64.txz
+          name: postgres-darwin-arm_64.txz
+          if-no-files-found: error
+  repack-darwin-amd64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create archives
+        run: |
+          ./scripts/repack-postgres.sh -v $PG_VERSION -p darwin -a amd64
+      - name: Upload bundle
+        uses: actions/upload-artifact@v3
+        with:
+          path: bundle/postgres-darwin-x86_64.txz
+          name: postgres-darwin-x86_64.txz
+          if-no-files-found: error
+  repack-windows-amd64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create archives
+        run: |
+          ./scripts/repack-postgres.sh -v $PG_VERSION -p windows -a amd64
+      - name: Upload bundle
+        uses: actions/upload-artifact@v3
+        with:
+          path: bundle/postgres-windows-x86_64.txz
+          name: postgres-windows-x86_64.txz
+          if-no-files-found: error
+  build-linux-amd64:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create archives
+        run: |
+          sudo -E ./scripts/build-postgres-debian.sh
+      - name: Upload bundle
+        uses: actions/upload-artifact@v3
+        with:
+          path: /usr/local/pg-dist/postgres-linux-debian.txz
+          name: postgres-linux-x86_64.txz
+          if-no-files-found: error
+  build-linux-arm64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create archives
+        uses: uraimo/run-on-arch-action@v2
+        with:
+          arch: aarch64
+          distro: ubuntu22.04
+          env: |
+            PG_VERSION: "${{ env.PG_VERSION }}"
+            PG_DIST_VERSION: "${{ env.PG_DIST_VERSION }}"
+          setup: |
+            mkdir -p "${PWD}/artifacts"
+          dockerRunArgs: |
+            --volume "${PWD}/artifacts:/usr/local/pg-dist"
+          run: |
+            ./scripts/build-postgres-debian.sh
+      - name: Upload bundle
+        uses: actions/upload-artifact@v3
+        with:
+          path: artifacts/postgres-linux-debian.txz
+          name: postgres-linux-arm_64.txz
+          if-no-files-found: error
+
+  package:
+    needs:
+      - repack-darwin-arm64
+      - repack-darwin-amd64
+      - repack-windows-amd64
+      - build-linux-amd64
+      - build-linux-arm64
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout master branch
+        uses: actions/checkout@v3
+        with:
+          path: master
+
+      - name: Download workflow run artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Move binaries
+        working-directory: master
+        run: |
+          rm -rf ./npm/darwin-arm64/dist/* ./npm/darwin-x64/dist/* ./npm/win32-x64/dist/* ./npm/linux-x64/dist/* ./npm/linux-arm64/dist/*
+          tar -xvf ../postgres-darwin-arm_64.txz/postgres-darwin-arm_64.txz -C ./npm/darwin-arm64/dist
+          tar -xvf ../postgres-darwin-x86_64.txz/postgres-darwin-x86_64.txz -C ./npm/darwin-x64/dist
+          tar -xvf ../postgres-windows-x86_64.txz/postgres-windows-x86_64.txz -C ./npm/win32-x64/dist
+          tar -xvf ../postgres-linux-x86_64.txz/postgres-linux-debian.txz -C ./npm/linux-x64/dist
+          tar -xvf ../postgres-linux-arm_64.txz/postgres-linux-debian.txz -C ./npm/linux-arm64/dist
+          chmod +x ./npm/*/dist/bin/*
+          ./scripts/replace-symlinks.sh
+
+      - name: Pack packages
+        working-directory: master
+        run: |
+          (cd ./npm/postgresql-dist && npm run release-prep && npm pack)
+          (cd ./npm/linux-arm64 && npm pack)
+          (cd ./npm/linux-x64 && npm pack)
+          (cd ./npm/darwin-arm64 && npm pack)
+          (cd ./npm/darwin-x64 && npm pack)
+          (cd ./npm/win32-x64 && npm pack)
+      - name: List all files
+        run: find
+
+      - name: Upload bundle darwin-arm64
+        uses: actions/upload-artifact@v3
+        with:
+          path: master/npm/darwin-arm64/postgresql-dist-darwin-arm64-*.tgz
+          name: postgresql-dist-darwin-arm64.tgz
+          if-no-files-found: error
+      - name: Upload bundle darwin-x64
+        uses: actions/upload-artifact@v3
+        with:
+          path: master/npm/darwin-x64/postgresql-dist-darwin-x64-*.tgz
+          name: postgresql-dist-darwin-x64.tgz
+          if-no-files-found: error
+      - name: Upload bundle win32-x64
+        uses: actions/upload-artifact@v3
+        with:
+          path: master/npm/win32-x64/postgresql-dist-win32-x64-*.tgz
+          name: postgresql-dist-win32-x64.tgz
+          if-no-files-found: error
+      - name: Upload bundle linux-x64
+        uses: actions/upload-artifact@v3
+        with:
+          path: master/npm/linux-x64/postgresql-dist-linux-x64-*.tgz
+          name: postgresql-dist-linux-x64.tgz
+          if-no-files-found: error
+      - name: Upload bundle linux-arm64
+        uses: actions/upload-artifact@v3
+        with:
+          path: master/npm/linux-arm64/postgresql-dist-linux-arm64-*.tgz
+          name: postgresql-dist-linux-arm64.tgz
+          if-no-files-found: error
+      - name: Upload bundle postgresql-dist
+        uses: actions/upload-artifact@v3
+        with:
+          path: master/npm/postgresql-dist/postgresql-dist-*.tgz
+          name: postgresql-dist.tgz
+          if-no-files-found: error
+
+  test-linux-x64:
+    runs-on: ubuntu-latest
+    needs:
+      - package
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - uses: actions/download-artifact@v3
+        with:
+          name: postgresql-dist.tgz
+      - uses: actions/download-artifact@v3
+        with:
+          name: postgresql-dist-linux-x64.tgz
+      - name: Run NPM Test
+        working-directory: ./tests
+        run: |
+          npm i ../postgresql-dist-*.tgz && npm test
+
+  test-linux-arm64:
+    runs-on: ubuntu-latest
+    needs:
+      - package
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: postgresql-dist.tgz
+      - uses: actions/download-artifact@v3
+        with:
+          name: postgresql-dist-linux-arm64.tgz
+      - name: Run testing
+        uses: uraimo/run-on-arch-action@v2
+        with:
+          arch: aarch64
+          distro: ubuntu22.04
+          run: |
+            apt update -q -y
+            apt install -q -y curl bash sudo
+            useradd -m otheruser
+            cp ./postgresql-dist-*.tgz tests/
+            chmod -R 777 tests
+            sudo -u otheruser bash -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash'
+            sudo -u otheruser bash -c '. ~/.profile && nvm install v20 && (cd tests && npm i ./postgresql-dist-*.tgz && npm test)'
+
+  test-darwin-x64:
+    runs-on: macos-latest
+    needs:
+      - package
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - uses: actions/download-artifact@v3
+        with:
+          name: postgresql-dist.tgz
+      - uses: actions/download-artifact@v3
+        with:
+          name: postgresql-dist-darwin-x64.tgz
+      - name: Run NPM Test
+        working-directory: ./tests
+        run: |
+          npm i ../postgresql-dist-*.tgz && npm test
+
+  test-win32-x64:
+    runs-on: windows-latest
+    needs:
+      - package
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - uses: actions/download-artifact@v3
+        with:
+          name: postgresql-dist.tgz
+      - uses: actions/download-artifact@v3
+        with:
+          name: postgresql-dist-win32-x64.tgz
+      - name: Run NPM Test
+        working-directory: ./tests
+        shell: bash
+        run: |
+          npm i ../postgresql-dist-*.tgz && npm test
+
+  test-darwin-arm64:
+    runs-on: macos-latest-xlarge
+    needs:
+      - package
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - uses: actions/download-artifact@v3
+        with:
+          name: postgresql-dist.tgz
+      - uses: actions/download-artifact@v3
+        with:
+          name: postgresql-dist-darwin-arm64.tgz
+      - name: Run NPM Test
+        working-directory: ./tests
+        run: |
+          npm i ../postgresql-dist-*.tgz && npm test
+
+  publish:
+    runs-on: ubuntu-latest
+    needs:
+      - test-linux-x64
+      - test-linux-arm64
+      - test-darwin-x64
+      - test-win32-x64
+      - test-darwin-arm64
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - uses: actions/download-artifact@v3
+        with:
+          name: postgresql-dist.tgz
+      - uses: actions/download-artifact@v3
+        with:
+          name: postgresql-dist-linux-x64.tgz
+      - uses: actions/download-artifact@v3
+        with:
+          name: postgresql-dist-linux-arm64.tgz
+      - uses: actions/download-artifact@v3
+        with:
+          name: postgresql-dist-darwin-x64.tgz
+      - uses: actions/download-artifact@v3
+        with:
+          name: postgresql-dist-win32-x64.tgz
+      - uses: actions/download-artifact@v3
+        with:
+          name: postgresql-dist-darwin-arm64.tgz
+      - name: Run NPM Publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm publish postgresql-dist-v*.tgz
+          npm publish postgresql-dist-linux-x64-v*.tgz
+          npm publish postgresql-dist-linux-arm64-v*.tgz
+          npm publish postgresql-dist-darwin-x64-v*.tgz
+          npm publish postgresql-dist-win32-x64-v*.tgz
+          npm publish postgresql-dist-darwin-arm64-v*.tgz
+
+  push:
+    needs:
+      - test-linux-x64
+      - test-linux-arm64
+      - test-darwin-x64
+      - test-win32-x64
+      - test-darwin-arm64
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout master branch
+        uses: actions/checkout@v3
+        with:
+          path: master
+
+      - name: Download and unpack all workflow run artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Move binaries
+        working-directory: master
+        run: |
+          tar -xvf ../postgres-darwin-arm_64.txz/postgres-darwin-arm_64.txz -C ./npm/darwin-arm64/dist
+          tar -xvf ../postgres-darwin-x86_64.txz/postgres-darwin-x86_64.txz -C ./npm/darwin-x64/dist
+          tar -xvf ../postgres-windows-x86_64.txz/postgres-windows-x86_64.txz -C ./npm/win32-x64/dist
+          tar -xvf ../postgres-linux-x86_64.txz/postgres-linux-debian.txz -C ./npm/linux-x64/dist
+          tar -xvf ../postgres-linux-arm_64.txz/postgres-linux-debian.txz -C ./npm/linux-arm64/dist
+          chmod +x ./npm/*/dist/bin/*
+          ./scripts/replace-symlinks.sh
+          (cd ./npm/postgresql-dist && npm run release-prep)
+
+      - name: List all files
+        run: tree
+
+      - name: Check if there are any changes
+        id: has_changes
+        working-directory: master
+        run: |
+          git status || exit 1
+          test -n "$(git status --porcelain)" && result=yes || result=no
+          echo "result=$result" >> $GITHUB_OUTPUT
+
+      - name: Commit changes
+        if: steps.has_changes.outputs.result == 'yes'
+        working-directory: master
+        run: |
+          git config --local user.email "github-actions@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add --all
+          git commit -m "Autobuild: Built from ${{ github.sha }}"
+
+      - name: Push changes back to origin
+        if: steps.has_changes.outputs.result == 'yes'
+        working-directory: master
+        run: |
+          # XXX: workaround for https://github.com/orgs/community/discussions/55820
+          git config --global http.version HTTP/1.1
+          git pull -r
+          git push https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git master

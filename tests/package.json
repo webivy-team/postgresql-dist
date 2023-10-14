@@ -1,0 +1,9 @@
+{
+  "type": "module",
+  "scripts": {
+    "test": "node --test --experimental-test-coverage --test-reporter=spec"
+  },
+  "dependencies": {
+    "pg": "^8.11.3"
+  }
+}
