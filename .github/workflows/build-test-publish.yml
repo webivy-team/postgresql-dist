@@ -10,7 +10,7 @@ permissions: write-all
 
 env:
   PG_VERSION: 15.4
-  PG_DIST_VERSION: 3
+  PG_DIST_VERSION: 4
 
 jobs:
   repack-darwin-arm64:
@@ -170,9 +170,10 @@ jobs:
       - name: Upload bundle postgresql-dist
         uses: actions/upload-artifact@v3
         with:
-          path: tests
+          path: master/tests
           name: tests
           if-no-files-found: error
+
   test-linux-x64:
     runs-on: ubuntu-latest
     needs:
@@ -220,7 +221,7 @@ jobs:
             apt install -q -y curl bash sudo
             useradd -m otheruser
             cp ./postgresql-dist-*.tgz tests/
-            chmod -R 777 tests
+            chmod -R 777 .
             sudo -u otheruser bash -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash'
             sudo -u otheruser bash -c '. ~/.profile && nvm install v20 && (cd tests && npm i ./postgresql-dist-*.tgz && npm test)'
 
@@ -364,7 +365,7 @@ jobs:
           tar -xvf ../postgres-linux-arm_64.txz/postgres-linux-debian.txz -C ./npm/linux-arm64/dist
           chmod +x ./npm/*/dist/bin/*
           ./scripts/replace-symlinks.sh
-          (cd ./npm/postgresql-dist && npm run release-prep)
+          (cd ./npm/postgresql-dist && npm i && npm run release-prep)
 
       - name: List all files
         run: tree
