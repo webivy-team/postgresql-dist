@@ -6,21 +6,27 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "release-prep": "jq '.version = \"'v${PG_VERSION}.0-${PG_DIST_VERSION}'\"' package.json > package.json.tmp && mv package.json.tmp package.json && npm run darwin-x64 && npm run darwin-arm64 && npm run linux-arm64 && npm run linux-x64 && npm run win32-x64",
+    "release-prep": "tsc && jq '.version = \"'v${PG_VERSION}.0-${PG_DIST_VERSION}'\"' package.json > package.json.tmp && mv package.json.tmp package.json && npm run darwin-x64 && npm run darwin-arm64 && npm run linux-arm64 && npm run linux-x64 && npm run win32-x64",
     "darwin-arm64": "version=$(cat ./package.json | jq -r '.version') && jq '.optionalDependencies[\"postgresql-dist-darwin-arm64\"] = \"'$version'\"' package.json > package.json.tmp && mv package.json.tmp package.json && cd ../darwin-arm64 && npm run pre-release",
     "darwin-x64": "version=$(cat ./package.json | jq -r '.version') && jq '.optionalDependencies[\"postgresql-dist-darwin-x64\"] = \"'$version'\"' package.json > package.json.tmp && mv package.json.tmp package.json && cd ../darwin-x64 && npm run pre-release",
     "linux-arm64": "version=$(cat ./package.json | jq -r '.version') && jq '.optionalDependencies[\"postgresql-dist-linux-arm64\"] = \"'$version'\"' package.json > package.json.tmp && mv package.json.tmp package.json && cd ../linux-arm64 && npm run pre-release",
     "linux-x64": "version=$(cat ./package.json | jq -r '.version') && jq '.optionalDependencies[\"postgresql-dist-linux-x64\"] = \"'$version'\"' package.json > package.json.tmp && mv package.json.tmp package.json && cd ../linux-x64 && npm run pre-release",
-    "win32-x64": "version=$(cat ./package.json | jq -r '.version') && jq '.optionalDependencies[\"postgresql-dist-win32-x64\"] = \"'$version'\"' package.json > package.json.tmp && mv package.json.tmp package.json && cd ../win32-x64 && npm run pre-release"
+    "win32-x64": "version=$(cat ./package.json | jq -r '.version') && jq '.optionalDependencies[\"postgresql-dist-win32-x64\"] = \"'$version'\"' package.json > package.json.tmp && mv package.json.tmp package.json && cd ../win32-x64 && npm run pre-release",
+    "tsc": "rm -f index.d.ts && tsc"
   },
   "optionalDependencies": {
-    "postgresql-dist-darwin-x64": "v15.4.0-2",
-    "postgresql-dist-darwin-arm64": "v15.4.0-2",
-    "postgresql-dist-linux-arm64": "v15.4.0-2",
-    "postgresql-dist-linux-x64": "v15.4.0-2",
-    "postgresql-dist-win32-x64": "v15.4.0-2"
+    "postgresql-dist-darwin-arm64": "v.0-",
+    "postgresql-dist-darwin-x64": "v.0-",
+    "postgresql-dist-linux-arm64": "v.0-",
+    "postgresql-dist-linux-x64": "v.0-",
+    "postgresql-dist-win32-x64": "v.0-"
   },
   "dependencies": {
     "async-exit-hook": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/async-exit-hook": "^2.0.0",
+    "@types/node": "^20.8.6",
+    "typescript": "^5.2.2"
   }
 }

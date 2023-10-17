@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "target": "es2018",
+    "declarationMap": false,
+    "moduleResolution": "node",
+    "module": "es2020"
+  },
+  "include": [
+    "*"
+  ]
+}
