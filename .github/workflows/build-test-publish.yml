@@ -276,10 +276,8 @@ jobs:
       - name: Run NPM Test
         working-directory: ./tests
         run: |
-          paexec -u foo -p p@ssw0rd -lo $pwd\install.txt -w $pwd npm i D:\a\postgresql-dist\postgresql-dist\postgresql-dist-win32-x64.tgz D:\a\postgresql-dist\postgresql-dist\postgresql-dist.tgz
-          paexec -u foo -p p@ssw0rd -lo $pwd\test.txt -w $pwd npm test
-          cat install.txt
-          cat test.txt
+          npm i D:\a\postgresql-dist\postgresql-dist\postgresql-dist-win32-x64.tgz D:\a\postgresql-dist\postgresql-dist\postgresql-dist.tgz
+          npm test
 
   # test-darwin-arm64:
   #   runs-on: macos-latest-xlarge
