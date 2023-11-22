@@ -39,19 +39,19 @@ jobs:
   #         path: bundle/postgres-darwin-x86_64.txz
   #         name: postgres-darwin-x86_64.txz
   #         if-no-files-found: error
-  repack-windows-amd64:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Create archives
-        run: |
-          ./scripts/repack-postgres.sh -v $PG_VERSION -p windows -a amd64
-      - name: Upload bundle
-        uses: actions/upload-artifact@v3
-        with:
-          path: bundle/postgres-windows-x86_64.txz
-          name: postgres-windows-x86_64.txz
-          if-no-files-found: error
+  # repack-windows-amd64:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Create archives
+  #       run: |
+  #         ./scripts/repack-postgres.sh -v $PG_VERSION -p windows -a amd64
+  #     - name: Upload bundle
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         path: bundle/postgres-windows-x86_64.txz
+  #         name: postgres-windows-x86_64.txz
+  #         if-no-files-found: error
   # build-linux-amd64:
   #   runs-on: ubuntu-20.04
   #   steps:
@@ -91,10 +91,10 @@ jobs:
   #         if-no-files-found: error
 
   package:
-    needs:
+    # needs:
       # - repack-darwin-arm64
       # - repack-darwin-amd64
-      - repack-windows-amd64
+      # - repack-windows-amd64
       # - build-linux-amd64
       # - build-linux-arm64
     runs-on: ubuntu-latest
@@ -104,20 +104,20 @@ jobs:
         with:
           path: master
 
-      - name: Download workflow run artifacts
-        uses: actions/download-artifact@v3
+      # - name: Download workflow run artifacts
+      #   uses: actions/download-artifact@v3
 
       - name: Move binaries
         working-directory: master
         run: |
-          rm -rf ./npm/darwin-arm64/dist/* ./npm/darwin-x64/dist/* ./npm/win32-x64/dist/* ./npm/linux-x64/dist/* ./npm/linux-arm64/dist/*
+          # rm -rf ./npm/darwin-arm64/dist/* ./npm/darwin-x64/dist/* ./npm/win32-x64/dist/* ./npm/linux-x64/dist/* ./npm/linux-arm64/dist/*
           # tar -xvf ../postgres-darwin-arm_64.txz/postgres-darwin-arm_64.txz -C ./npm/darwin-arm64/dist
           # tar -xvf ../postgres-darwin-x86_64.txz/postgres-darwin-x86_64.txz -C ./npm/darwin-x64/dist
-          tar -xvf ../postgres-windows-x86_64.txz/postgres-windows-x86_64.txz -C ./npm/win32-x64/dist
+          # tar -xvf ../postgres-windows-x86_64.txz/postgres-windows-x86_64.txz -C ./npm/win32-x64/dist
           # tar -xvf ../postgres-linux-x86_64.txz/postgres-linux-debian.txz -C ./npm/linux-x64/dist
           # tar -xvf ../postgres-linux-arm_64.txz/postgres-linux-debian.txz -C ./npm/linux-arm64/dist
-          chmod +x ./npm/*/dist/bin/*
-          ./scripts/replace-symlinks.sh
+          # chmod +x ./npm/*/dist/bin/*
+          # ./scripts/replace-symlinks.sh
 
       - name: Pack packages
         working-directory: master
@@ -275,7 +275,6 @@ jobs:
           name: tests
       - name: Run NPM Test
         working-directory: ./tests
-        shell: bash
         run: |
           paexec -u foo -p p@ssw0rd -lo $pwd\install.txt -w $pwd npm i ../postgresql-dist-*.tgz
           paexec -u foo -p p@ssw0rd -lo $pwd\test.txt -w $pwd npm test
