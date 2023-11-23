@@ -245,8 +245,8 @@ export default async (_config = {}) => {
     await mkdir(resolve(config.databaseDir, 'socket'), { recursive: true });
     let passwordFile
     if (usePassword) {
-      const randomId = crypto.randomBytes(6).readUIntLE(0, 6).toString(64);
-      const password = config.password || crypto.randomBytes(6).readUIntLE(0, 6).toString(64);
+      const randomId = crypto.randomBytes(10).toString('hex');
+      const password = config.password || crypto.randomBytes(100).toString('hex');
       passwordFile = resolve(config.databaseDir, `pg-password-${randomId}`);
       await writeFile(passwordFile, password + '\n');
     }
@@ -265,7 +265,7 @@ export default async (_config = {}) => {
 
     await appendFile(
       resolve(config.databaseDir, 'data', 'postgresql.conf'),
-      `\nunix_socket_directories = '${resolve(config.databaseDir, 'socket')}'`
+      `\nunix_socket_directories = '${resolve(config.databaseDir, 'socket').replace(/\\/g, '\\\\')}'`
     );
 
     await appendFile(
