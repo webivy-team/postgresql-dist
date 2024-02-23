@@ -1,12 +1,12 @@
 #!/bin/bash
 set -ex
 
-# Webauthn is not included for mac/win
+# TODO: Webauthn is not included for mac/win since those are just repacks
 WEBAUTHN_VERSION="d4fbe44"
 ECDSA_VERSION="044ed2c"
 CBOR_VERSION="7eba332"
 
-# All commented parts are related to postgis
+# TODO: All commented parts are related to postgis, in the future include in build
 # POSTGIS_VERSION="3.2.0"
 # PROJ_VERSION="8.2.1"
 # PROJ_DATUMGRID_VERSION="1.8"
