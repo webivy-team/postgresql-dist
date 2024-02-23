@@ -10,7 +10,7 @@ permissions: write-all
 
 env:
   PG_VERSION: 15.6
-  PG_DIST_VERSION: 5
+  PG_DIST_VERSION: 6
 
 jobs:
   repack-darwin-arm64:
@@ -21,7 +21,7 @@ jobs:
         run: |
           ./scripts/repack-postgres.sh -v $PG_VERSION -p darwin -a arm64v8
       - name: Upload bundle
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: bundle/postgres-darwin-arm_64.txz
           name: postgres-darwin-arm_64.txz
@@ -34,7 +34,7 @@ jobs:
         run: |
           ./scripts/repack-postgres.sh -v $PG_VERSION -p darwin -a amd64
       - name: Upload bundle
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: bundle/postgres-darwin-x86_64.txz
           name: postgres-darwin-x86_64.txz
@@ -47,7 +47,7 @@ jobs:
         run: |
           ./scripts/repack-postgres.sh -v $PG_VERSION -p windows -a amd64
       - name: Upload bundle
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: bundle/postgres-windows-x86_64.txz
           name: postgres-windows-x86_64.txz
@@ -60,7 +60,7 @@ jobs:
         run: |
           sudo -E ./scripts/build-postgres-debian.sh
       - name: Upload bundle
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: /usr/local/pg-dist/postgres-linux-debian.txz
           name: postgres-linux-x86_64.txz
@@ -84,7 +84,7 @@ jobs:
           run: |
             ./scripts/build-postgres-debian.sh
       - name: Upload bundle
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: artifacts/postgres-linux-debian.txz
           name: postgres-linux-arm_64.txz
@@ -100,12 +100,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout master branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: master
 
       - name: Download workflow run artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
 
       - name: Move binaries
         working-directory: master
@@ -132,43 +132,43 @@ jobs:
         run: find
 
       - name: Upload bundle darwin-arm64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: master/npm/darwin-arm64/postgresql-dist-darwin-arm64-*.tgz
           name: postgresql-dist-darwin-arm64.tgz
           if-no-files-found: error
       - name: Upload bundle darwin-x64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: master/npm/darwin-x64/postgresql-dist-darwin-x64-*.tgz
           name: postgresql-dist-darwin-x64.tgz
           if-no-files-found: error
       - name: Upload bundle win32-x64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: master/npm/win32-x64/postgresql-dist-win32-x64-*.tgz
           name: postgresql-dist-win32-x64.tgz
           if-no-files-found: error
       - name: Upload bundle linux-x64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: master/npm/linux-x64/postgresql-dist-linux-x64-*.tgz
           name: postgresql-dist-linux-x64.tgz
           if-no-files-found: error
       - name: Upload bundle linux-arm64
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: master/npm/linux-arm64/postgresql-dist-linux-arm64-*.tgz
           name: postgresql-dist-linux-arm64.tgz
           if-no-files-found: error
       - name: Upload bundle postgresql-dist
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: master/npm/postgresql-dist/postgresql-dist-*.tgz
           name: postgresql-dist.tgz
           if-no-files-found: error
       - name: Upload bundle postgresql-dist
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: master/tests
           name: tests
@@ -180,16 +180,16 @@ jobs:
       - package
     steps:
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: postgresql-dist.tgz
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: postgresql-dist-linux-x64.tgz
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: tests
       - name: Run NPM Test
@@ -202,13 +202,13 @@ jobs:
     needs:
       - package
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: postgresql-dist.tgz
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: postgresql-dist-linux-arm64.tgz
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: tests
       - name: Run testing
@@ -231,16 +231,16 @@ jobs:
       - package
     steps:
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: postgresql-dist.tgz
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: postgresql-dist-darwin-x64.tgz
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: tests
       - name: Run NPM Test
@@ -254,16 +254,16 @@ jobs:
       - package
     steps:
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: postgresql-dist.tgz
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: postgresql-dist-win32-x64.tgz
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: tests
       - name: Run NPM Test
@@ -278,16 +278,16 @@ jobs:
       - package
     steps:
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: postgresql-dist.tgz
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: postgresql-dist-darwin-arm64.tgz
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: tests
       - name: Run NPM Test
@@ -305,26 +305,26 @@ jobs:
       - test-darwin-arm64
     steps:
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: 'https://registry.npmjs.org'
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: postgresql-dist.tgz
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: postgresql-dist-linux-x64.tgz
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: postgresql-dist-linux-arm64.tgz
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: postgresql-dist-darwin-x64.tgz
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: postgresql-dist-win32-x64.tgz
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: postgresql-dist-darwin-arm64.tgz
       - name: Run NPM Publish
@@ -348,12 +348,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout master branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: master
 
       - name: Download and unpack all workflow run artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
 
       - name: Move binaries
         working-directory: master
