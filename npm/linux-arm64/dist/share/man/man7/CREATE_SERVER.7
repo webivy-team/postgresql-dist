@@ -2,12 +2,12 @@
 .\"     Title: CREATE SERVER
 .\"    Author: The PostgreSQL Global Development Group
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023
-.\"    Manual: PostgreSQL 15.4 Documentation
-.\"    Source: PostgreSQL 15.4
+.\"      Date: 2024
+.\"    Manual: PostgreSQL 15.6 Documentation
+.\"    Source: PostgreSQL 15.6
 .\"  Language: English
 .\"
-.TH "CREATE SERVER" "7" "2023" "PostgreSQL 15.4" "PostgreSQL 15.4 Documentation"
+.TH "CREATE SERVER" "7" "2024" "PostgreSQL 15.6" "PostgreSQL 15.6 Documentation"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -88,6 +88,8 @@ module, a foreign server\*(Aqs name can be used as an argument of the
 function to indicate the connection parameters\&. It is necessary to have the
 USAGE
 privilege on the foreign server to be able to use it in this way\&.
+.PP
+If the foreign server supports sort pushdown, it is necessary for it to have the same sort ordering as the local server\&.
 .SH "EXAMPLES"
 .PP
 Create a server

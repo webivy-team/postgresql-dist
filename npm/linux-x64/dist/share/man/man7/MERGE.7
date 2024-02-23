@@ -2,12 +2,12 @@
 .\"     Title: MERGE
 .\"    Author: The PostgreSQL Global Development Group
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023
-.\"    Manual: PostgreSQL 15.4 Documentation
-.\"    Source: PostgreSQL 15.4
+.\"      Date: 2024
+.\"    Manual: PostgreSQL 15.6 Documentation
+.\"    Source: PostgreSQL 15.6
 .\"  Language: English
 .\"
-.TH "MERGE" "7" "2023" "PostgreSQL 15.4" "PostgreSQL 15.4 Documentation"
+.TH "MERGE" "7" "2024" "PostgreSQL 15.6" "PostgreSQL 15.6 Documentation"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -120,19 +120,21 @@ SET
 clause\&. If you specify an insert action, you must have the
 INSERT
 privilege on the
-\fItarget_table_name\fR\&. If you specify an delete action, you must have the
+\fItarget_table_name\fR\&. If you specify a delete action, you must have the
 DELETE
 privilege on the
 \fItarget_table_name\fR\&. Privileges are tested once at statement start and are checked whether or not particular
 WHEN
 clauses are executed\&. You will require the
 SELECT
-privilege on the
+privilege on any column(s) of the
 \fIdata_source\fR
-and any column(s) of the
+and
 \fItarget_table_name\fR
-referred to in a
-condition\&.
+referred to in any
+condition
+or
+expression\&.
 .PP
 \fBMERGE\fR
 is not supported if the
@@ -667,7 +669,9 @@ This command conforms to the
 SQL
 standard\&.
 .PP
-The WITH clause and
+The
+WITH
+clause and
 DO NOTHING
 action are extensions to the
 SQL

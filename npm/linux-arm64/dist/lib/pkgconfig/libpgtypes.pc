@@ -6,7 +6,7 @@ includedir=${prefix}/include
 Name: libpgtypes
 Description: PostgreSQL libpgtypes library
 Url: https://www.postgresql.org/
-Version: 15.4
+Version: 15.6
 Requires: 
 Requires.private: 
 Cflags: -I${includedir}

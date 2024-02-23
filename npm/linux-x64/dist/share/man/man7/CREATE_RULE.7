@@ -2,12 +2,12 @@
 .\"     Title: CREATE RULE
 .\"    Author: The PostgreSQL Global Development Group
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023
-.\"    Manual: PostgreSQL 15.4 Documentation
-.\"    Source: PostgreSQL 15.4
+.\"      Date: 2024
+.\"    Manual: PostgreSQL 15.6 Documentation
+.\"    Source: PostgreSQL 15.6
 .\"  Language: English
 .\"
-.TH "CREATE RULE" "7" "2023" "PostgreSQL 15.4" "PostgreSQL 15.4 Documentation"
+.TH "CREATE RULE" "7" "2024" "PostgreSQL 15.6" "PostgreSQL 15.6 Documentation"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -56,19 +56,14 @@ Chapter\ \&41\&.
 .PP
 Presently,
 ON SELECT
-rules must be unconditional
+rules can only be attached to views\&. (Attaching one to a table converts the table into a view\&.) Such a rule must be named
+"_RETURN", must be an unconditional
 INSTEAD
-rules and must have actions that consist of a single
+rule, and must have an action that consists of a single
 \fBSELECT\fR
-command\&. Thus, an
-ON SELECT
-rule effectively turns the table into a view, whose visible contents are the rows returned by the rule\*(Aqs
-\fBSELECT\fR
-command rather than whatever had been stored in the table (if anything)\&. It is considered better style to write a
-\fBCREATE VIEW\fR
-command than to create a real table and define an
-ON SELECT
-rule for it\&.
+command\&. This command defines the visible contents of the view\&. (The view itself is basically a dummy table with no storage\&.) It\*(Aqs best to regard such a rule as an implementation detail\&. While a view can be redefined via
+CREATE OR REPLACE RULE "_RETURN" AS \&.\&.\&., it\*(Aqs better style to use
+CREATE OR REPLACE VIEW\&.
 .PP
 You can create the illusion of an updatable view by defining
 ON INSERT,

@@ -78,9 +78,6 @@
 /* Define to 1 if you have the `backtrace_symbols' function. */
 #define HAVE_BACKTRACE_SYMBOLS 1
 
-/* Define to 1 if you have the `BIO_get_data' function. */
-#define HAVE_BIO_GET_DATA 1
-
 /* Define to 1 if you have the `BIO_meth_new' function. */
 #define HAVE_BIO_METH_NEW 1
 
@@ -805,7 +802,7 @@
 #define PACKAGE_NAME "PostgreSQL"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "PostgreSQL 15.4"
+#define PACKAGE_STRING "PostgreSQL 15.6"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "postgresql"
@@ -814,7 +811,7 @@
 #define PACKAGE_URL "https://www.postgresql.org/"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "15.4"
+#define PACKAGE_VERSION "15.6"
 
 /* Define to the name of a signed 128-bit integer type. */
 #define PG_INT128_TYPE __int128
@@ -833,7 +830,7 @@
 #define PG_MAJORVERSION_NUM 15
 
 /* PostgreSQL minor version number */
-#define PG_MINORVERSION_NUM 4
+#define PG_MINORVERSION_NUM 6
 
 /* Define to best printf format archetype, usually gnu_printf if available. */
 #define PG_PRINTF_ATTRIBUTE gnu_printf
@@ -842,13 +839,13 @@
 #define PG_USE_STDBOOL 1
 
 /* PostgreSQL version as a string */
-#define PG_VERSION "15.4"
+#define PG_VERSION "15.6"
 
 /* PostgreSQL version as a number */
-#define PG_VERSION_NUM 150004
+#define PG_VERSION_NUM 150006
 
 /* A string containing the version number, platform, and C compiler */
-#define PG_VERSION_STR "PostgreSQL 15.4 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0, 64-bit"
+#define PG_VERSION_STR "PostgreSQL 15.6 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0, 64-bit"
 
 /* Define to 1 to allow profiling output to be saved separately for each
    process. */
