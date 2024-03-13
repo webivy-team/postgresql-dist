@@ -30,6 +30,7 @@ await postgresqlServer.stop()
       - <https://github.com/ameensol/pg-ecdsa>
         - Based on
           - <https://github.com/kmackay/micro-ecc>
+  - RUM indexes from https://github.com/postgrespro/rum
 
 ## TODO
 

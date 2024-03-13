@@ -5,6 +5,7 @@ set -ex
 WEBAUTHN_VERSION="d4fbe44"
 ECDSA_VERSION="044ed2c"
 CBOR_VERSION="7eba332"
+RUM_VERSION="1.3.13"
 
 # TODO: All commented parts are related to postgis, in the future include in build
 # POSTGIS_VERSION="3.2.0"
@@ -136,6 +137,13 @@ mkdir -p /usr/src/pg-webauthn
   cp "$GIT_ROOT"/config.sub config.sub
   PATH="/usr/local/pg-build/bin:$PATH" make -j$(nproc)
   PATH="/usr/local/pg-build/bin:$PATH" make install
+mkdir -p /usr/src/rum
+  curl -sL "https://github.com/postgrespro/rum/archive/${RUM_VERSION}.tar.gz" | tar -xzf - -C /usr/src/rum --strip-components 1
+  cd /usr/src/rum
+  cp "$GIT_ROOT"/config.guess config.guess
+  cp "$GIT_ROOT"/config.sub config.sub
+  PATH="/usr/local/pg-build/bin:$PATH" make USE_PGXS=1 -j$(nproc)
+  PATH="/usr/local/pg-build/bin:$PATH" make USE_PGXS=1 install
 cd /usr/local/pg-build
 ls -lah *
 mkdir -p ./lib

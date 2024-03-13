@@ -10,7 +10,7 @@ permissions: write-all
 
 env:
   PG_VERSION: 15.6
-  PG_DIST_VERSION: 6
+  PG_DIST_VERSION: 7
 
 jobs:
   repack-darwin-arm64:

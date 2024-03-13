@@ -12,7 +12,7 @@ import AsyncExitHook from 'async-exit-hook';
  */
 
 /**
- * @typedef {{password?: string; auth?: string; user?: string; initdbFlags?: string[]; databaseDir?: string; listen_addresses?: string; }} Config
+ * @typedef {{password?: string; auth?: string; user?: string; initdbFlags?: string[]; databaseDir?: string; listen_addresses?: string; additionalConfig?: string; }} Config
  * @typedef {{ config: Config; process: import("node:child_process").ChildProcessWithoutNullStreams; socketDir: string; connectionString: string; stop: () => Promise<any>; fastStop: () => Promise<any>; immediateStop: () => Promise<any>; }} Instance
  */
 
@@ -235,6 +235,7 @@ export default async (_config = {}) => {
     initdbFlags: [],
     databaseDir: resolve(process.cwd(), 'db'),
     listen_addresses: '',
+    additionalConfig: '',
     ..._config
   }
 
@@ -273,6 +274,10 @@ export default async (_config = {}) => {
       `\nlisten_addresses = '${config.listen_addresses}'`
     );
   }
+  await appendFile(
+    resolve(config.databaseDir, 'data', 'postgresql.conf'),
+    `\n${config.additionalConfig}`
+  );
 
   const postgresProcess = await new Promise((pResolve, reject) => {
     const postgresProcess = postgres(resolve(config.databaseDir, 'data'))
