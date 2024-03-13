@@ -40,6 +40,7 @@ declare function _default(_config?: Config): Promise<{
         initdbFlags: string[];
         databaseDir: string;
         listen_addresses: string;
+        additionalConfig: string;
     };
     process: any;
     socketDir: string;
@@ -57,6 +58,7 @@ export type Config = {
     initdbFlags?: string[];
     databaseDir?: string;
     listen_addresses?: string;
+    additionalConfig?: string;
 };
 export type Instance = {
     config: Config;
