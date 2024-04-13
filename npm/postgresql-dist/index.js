@@ -326,9 +326,9 @@ export default async (_config = {}) => {
  */
 async function gracefulShutdown(done) {
   await Promise.all([...instances].map((instance) => {
-    return instance.stop();
+    return instance.fastStop();
   }));
   done();
 }
-
+// TODO: Replace with own implementation
 AsyncExitHook(gracefulShutdown);
